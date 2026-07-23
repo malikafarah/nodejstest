@@ -2,15 +2,42 @@ const express = require("express");
 const fs = require("fs");
 const app = express();
 const PORT = 5000;
-const users = require("../MOCK_DATA.json");
 const mongoose = require("mongoose");
 const { error } = require("console");
 
+mongoose.connect("mongodb://127.0.0.1:27017/nodetest")
+.then(()=>console.log("MongoDB connected"))
+.catch((err)=> console.log("Mongo Error: ",err));
 //schema
+const userSchema = new mongoose.Schema({
+    first_name:{
+        type: String,
+        required: true,
+    },
+    last_name:{
+        type:String,
+    },
+    email:{
+        type:String,
+        required: true,
+        unique: true,
+    },
+    gender:{
+        type: String,
+    },
+    ip_address:{
+        type: String,
+    },
+},
+{
+    timestamps:true,
+});
 
+const User = mongoose.model("User", userSchema);
 
 //Middleware - plugin
 app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
 app.use((req,res,next)=>{
     fs.appendFile("log.txt",
@@ -21,14 +48,16 @@ app.use((req,res,next)=>{
     );
 });
 
-app.get("/api/users",(req,res)=>{
-    return res.json(users);
+app.get("/api/users",async (req,res)=>{
+    const allDBUsers = await User.find({});
+    return res.json(allDBUsers);
 });
 
-app.get("/users",(req,res)=>{
+app.get("/users", async (req,res)=>{
+    const allDBUsers = await User.find({});
     const html = `
     <ul>
-        ${users.map(user => `<li> ${user.first_name} </li>`).join("")}
+        ${allDBUsers.map((user) => `<li> ${user.first_name} -- ${user.email} </li>`).join("")}
     </ul>
     `;
 
@@ -37,24 +66,18 @@ app.get("/users",(req,res)=>{
 
 app
     .route("/api/users/:id")
-    .get((req,res)=>{
-        const id=Number(req.params.id);
-        const user = users.find((user)=> user.id===id);
+    .get(async (req,res)=>{
+        const user = await User.findById(req.params.id);
+        if(!user) return res.status(404).json({"error": "User not found"});
         return res.json(user);
     })
-    .patch((req,res)=>{
-        const id = Number(req.params.id);
-        const body = res.body;
-        const userIndex = users.findIndex((user)=> user.id===id);
-        if(userIndex === -1){
-            res.status(404).send({status: "error", message:"id not found"});
-        }
-        const updatedUser = {...users[userIndex], ...body};
-        users[userIndex] = updatedUser;
-
+    .patch(async (req,res)=>{
+        await User.findByIdAndUpdate(req.params.id, {last_name: "Lee"})
+        return res.json({"msg": "success"});
     })
-    .delete((req,res) => {
-
+    .delete(async(req,res) => {
+        await User.findByIdAndDelete(req.params.id);
+        return res.json({"msg": "User deleted successfully"});
     });
 
 app.post("/api/users", async (req,res) => {
@@ -65,7 +88,7 @@ app.post("/api/users", async (req,res) => {
 
     //creates user
     
-    const result = await users.create({
+    const result = await User.create({
         first_name : body.first_name,
         last_name: body.last_name,
         email: body.email,
