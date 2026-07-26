@@ -17,3 +17,15 @@
 1784827613451: GET PATH: /api/users from IP: ::1
 1784827726648: DELETE PATH: /api/users/6a62492b1c12c5e325ee06e5 from IP: ::1
 1784827731036: GET PATH: /api/users from IP: ::1
+1785087382972: GET PATH: /user from IP: ::1
+1785087388304: GET PATH: /users from IP: ::1
+1785087388736: GET PATH: /users from IP: ::1
+1785087537406: GET PATH: /users from IP: ::1
+1785087539764: GET PATH: /user from IP: ::1
+1785087539827: GET PATH: /favicon.ico from IP: ::1
+1785087640444: POST PATH: /user from IP: ::1
+1785087652684: GET PATH: /user from IP: ::1
+1785087734453: GET PATH: /api/user from IP: ::1
+1785087737894: GET PATH: /api/users from IP: ::1
+1785087738117: GET PATH: /api/users from IP: ::1
+1785087741981: GET PATH: /users from IP: ::1

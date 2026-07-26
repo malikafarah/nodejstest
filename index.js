@@ -1,6 +1,8 @@
 const express = require("express");
 const {connectMongoDB} = require("./connection");
 
+connectMongoDB("mongodb://127.0.0.1:27017");
+
 const {logReqRes} = require("./middlewares")
 const userRouter = require('./routes/user');
 
@@ -15,7 +17,7 @@ app.use(express.json());
 
 app.use(logReqRes("log.txt"));
 
-app.use("/user",userRouter);
+app.use("/users",userRouter);
 
 app.listen(PORT,() => {
     console.log("Server Started");
